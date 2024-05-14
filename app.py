@@ -126,6 +126,8 @@ def update_status():
     db.commit()
     return jsonify({'status': 'success'})
 
+
+
 @app.route('/update_field_type', methods=['POST'])
 def update_field_type():
     data = request.get_json()

@@ -9,7 +9,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS templates (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            content_field BOOLEAN NOT NULL DEFAULT 0
+            content_field INTEGER NOT NULL DEFAULT 0
         );
     ''')
 
@@ -45,10 +45,13 @@ def init_db():
         );
     ''')
 
-    # Добавляем столбец 'completed' к таблице 'instance_fields', если он еще не существует
-    c.execute('''
-        ALTER TABLE instance_fields ADD COLUMN completed BOOLEAN DEFAULT FALSE;
-    ''')
+    # Проверяем наличие столбца 'completed' в таблице 'instance_fields'
+    c.execute("PRAGMA table_info(instance_fields)")
+    columns = [col[1] for col in c.fetchall()]
+    if 'completed' not in columns:
+        c.execute('''
+            ALTER TABLE instance_fields ADD COLUMN completed INTEGER DEFAULT 0;
+        ''')
 
     # Создаем таблицу для содержимого электронных писем
     c.execute('''
