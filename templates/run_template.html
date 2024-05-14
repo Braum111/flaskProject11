@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Запуск шаблона "{{ template_name }}"</h1>
+    <form method="POST">
+        {% for field in fields %}
+        <div class="form-group">
+            <label>{{ field.field_name }} ({{ field.field_type }}):</label>
+            <div class="d-flex align-items-center">
+                {% if field.field_type == 'tel' %}
+                <input type="tel" class="form-control mr-2 phone-input" style="width: 50%;" name="{{ field.field_name }}" value="{% for instance_field in instance_fields %}{% if instance_field.field_name == field.field_name %}{{ instance_field.field_value }}{% endif %}{% endfor %}" required>
+                {% else %}
+                <input type="{{ field.field_type }}" class="form-control mr-2" style="width: 50%;" name="{{ field.field_name }}" value="{% for instance_field in instance_fields %}{% if instance_field.field_name == field.field_name %}{{ instance_field.field_value }}{% endif %}{% endfor %}" required>
+                {% endif %}
+                <button type="button" class="btn btn-outline-secondary action-button" data-field-name="{{ field.field_name }}" data-instance-id="{{ instance_id }}" {% for instance_field in instance_fields %}{% if instance_field.field_name == field.field_name and instance_field.completed %}disabled{% endif %}{% endfor %}>&rarr;</button>
+                <span class="ml-2 status-text text-success">{% for instance_field in instance_fields %}{% if instance_field.field_name == field.field_name and instance_field.completed %}выполнено{% endif %}{% endfor %}</span>
+            </div>
+            {% if field.field_type == 'email' %}
+            <div class="mt-2">
+                <textarea class="form-control" name="content_{{ field.field_name }}" placeholder="Содержимое письма ({{ field.field_name }})">{% for email_content in email_contents %}{% if email_content.email_field_name == field.field_name %}{{ email_content.content }}{% endif %}{% endfor %}</textarea>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+</div>
+
+<!-- Подключение Inputmask для маски ввода телефона -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.7-beta.0/inputmask.min.js"></script>
+<script>
+$(document).ready(function(){
+    // Добавление маски для ввода телефона
+    Inputmask({"mask": "(999) 999-9999", "jitMasking": true}).mask('.phone-input');
+
+    // Добавление обработчика для кнопок
+    document.querySelectorAll('.action-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const statusText = this.nextElementSibling;
+            statusText.textContent = "выполнено";
+            this.disabled = true; // Отключить кнопку после нажатия
+
+            const instanceId = this.getAttribute('data-instance-id');
+            const fieldName = this.getAttribute('data-field-name');
+
+            // Отправка AJAX запроса на сервер для обновления статуса
+            fetch('/update_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ instance_id: instanceId, field_name: fieldName, completed: true })
+            }).then(response => response.json())
+            .then(data => console.log(data));
+        });
+    });
+
+    // Автоматическое форматирование номера телефона при вводе
+    $('.phone-input').on('input', function() {
+        var input = $(this).val();
+        input = input.replace(/\D/g, ''); // Удаление всех нецифровых символов
+        if (input.length === 11 && input.startsWith('8')) {
+            input = '7' + input.slice(1); // Замена 8 на 7 в начале номера
+        }
+        $(this).val(Inputmask.format(input, { alias: "numeric", mask: "(999) 999-9999" }));
+    });
+});
+</script>
+{% endblock %}

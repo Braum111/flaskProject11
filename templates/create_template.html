@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Создать новый шаблон workflow</h1>
+<form method="POST" action="{{ url_for('create_template') }}" class="form-custom">
+  <div class="form-group">
+    <label for="template_name">Название шаблона:</label>
+    <input type="text" class="form-control" id="template_name" name="template_name" required>
+  </div>
+  <div id="fields-container">
+    <!-- Здесь JavaScript будет добавлять новые поля -->
+  </div>
+  <button type="button" class="btn btn-primary" onclick="addField()">Добавить переменную</button>
+
+  <button type="submit" class="btn btn-success">Сохранить</button>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    addField(); // Добавить начальное поле при загрузке
+});
+
+function addField() {
+    const container = document.getElementById('fields-container');
+    const newField = document.createElement('div');
+    newField.classList.add('form-group', 'field', 'd-flex', 'align-items-center');
+    newField.innerHTML = `
+        <input type="text" class="form-control mr-2" name="field_names[]" placeholder="Имя переменной" style="width: 50%;" required>
+        <select class="form-control mr-2" name="field_types[]" style="width: 30%;">
+          <option value="text">Текст</option>
+          <option value="tel">Телефон</option>
+          <option value="email">Email</option>
+        </select>
+        <button type="button" class="btn btn-danger" onclick="removeField(this)">X</button>
+    `;
+    container.appendChild(newField);
+}
+
+function removeField(button) {
+    button.parentNode.remove();
+}
+</script>
+{% endblock %}

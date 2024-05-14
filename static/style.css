@@ -1,0 +1,45 @@
+body {
+    padding-top: 20px;
+    background-color: #f8f9fa;  // Светлый фон для современного вида
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.list-group-item {
+    transition: transform 0.3s;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.list-group-item:hover {
+    transform: scale(1.03);  // Небольшое увеличение при наведении для лучшей интерактивности
+}
+
+.btn-primary {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.form-custom .form-group {
+    margin-bottom: 15px;
+}
+
+.form-custom .form-group .form-control {
+    display: inline-block; /* Позволяет элементам быть в одной строке */
+    vertical-align: middle;
+}
+
+.form-custom .field .btn-danger {
+    padding: 0.375rem 0.75rem; /* Стандартный паддинг кнопок Bootstrap */
+}
+
+.custom-btn {
+    background-color: #2e4883; /* Зелёный цвет */
+    border-color: #0a0e0a;
+}
+.text-success {
+    color: green;
+    font-weight: bold;
+}

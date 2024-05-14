@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Просмотр шаблона "{{ template.name }}"</h1>
+<ul>
+  {% for field in fields %}
+  <li>{{ field.field_name }} ({{ field.field_type }})</li>
+  {% endfor %}
+  {% if template.content_field %}
+  <li>Содержимое письма (text)</li>
+  {% endif %}
+</ul>
+
+{% if instance %}
+<h2>Последние заполненные данные:</h2>
+<ul>
+  {% for field in instance_fields %}
+  <li>{{ field.field_name }}: {{ field.field_value }}</li>
+  {% endfor %}
+</ul>
+{% if email_contents %}
+<h2>Содержимое писем:</h2>
+<ul>
+  {% for email in email_contents %}
+  <li><strong>{{ email.email_field_name }}:</strong> {{ email.content }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% else %}
+<p>Этот шаблон ещё не использовался.</p>
+{% endif %}
+{% endblock %}
